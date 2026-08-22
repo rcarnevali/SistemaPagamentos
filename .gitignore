@@ -1,0 +1,7 @@
+# Pastas de compilação (.NET)
+bin/
+obj/
+
+# Pastas de configuração local do Visual Studio e VS Code
+.vs/
+.vscode/
