@@ -1,7 +1,7 @@
 # Sistema de Pagamentos de uma Loja
 
 ## Sobre o projeto
-Este projeto corresponde ao **segundo exercício individual do Bootcamp de Back-end da WoMakersCode**.
+Este projeto corresponde ao terceiro exercício individual do **Bootcamp de Back-end da [WoMakersCode](https://www.womakerscode.org/)**.
 
 O objetivo é desenvolver uma aplicação de console em C# para cadastrar vendas, listar vendas cadastradas e realizar pagamentos utilizando diferentes formas de pagamento. O exercício aplica conceitos de Programação Orientada a Objetos estudados no módulo.
 
