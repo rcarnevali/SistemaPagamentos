@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
-using System.Text;
 
 namespace SistemaPagamentos
 {
     public class Cliente
     {
-        public string Nome { get; private set; }// Declara a propriedade Nome com leitura pública e alteração privada.
-        public string CPF { get; } // Declara a propriedade CPF somente para leitura 
+        public string Nome { get; private set; } //Permite consultar o nome, mas somente a classe Cliente pode alterá-lo
+        public string CPF { get; } //Permite consultar o CPF, mas impede alterações depois da criação do cliente
 
-        // Cliente é CONSTRUTOR da classe: 1) ter exatamente o mesmo nome da classe; 2) não possuir tipo de retorno e 3) ser executado quando usamos new
+        //Cliente é CONSTRUTOR da classe: 1) ter exatamente o mesmo nome da classe; 2) não possuir tipo de retorno e 3) ser executado quando usamos new
         public Cliente(string nome, string cpf) // Valida informações do cliente.
         {
             if (string.IsNullOrWhiteSpace(nome)) throw new ArgumentException("O nome do cliente é obrigatório"); // Verifica se o nome está vazio, nulo ou contém somente espaços.

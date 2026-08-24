@@ -10,7 +10,6 @@ namespace SistemaPagamentos
             int opcao; // Define o resultado inicial da opção do menu.
             do
             {
-                Console.Clear();
                 ExibirMenu();
 
                 Console.Write("Escolha uma opção: ");
@@ -38,9 +37,9 @@ namespace SistemaPagamentos
                     case 0:
                         Console.WriteLine("Sistema encerrado");
                         break;
-                    default:
-                        Console.WriteLine("Operação Inválida");
-                        break;
+                        //default: // Não é necessario pois essa validação já faz esse trabalho if (!int.TryParse(Console.ReadLine(), out opcao) || opcao < 0 || opcao > 3)
+                        //Console.WriteLine("Operação Inválida");
+                        //break;
                 }
             } while (opcao != 0);
         }
@@ -61,47 +60,75 @@ namespace SistemaPagamentos
             Console.WriteLine();
         }
 
-        private static void CadastrarVenda() // Declara o método responsável pelo cadastro de vendas
+        private static void CadastrarVenda() //Declara o método responsável pelo cadastro de vendas
         {
-            Console.WriteLine("==================");
-            Console.WriteLine("CADASTRO DE VENDA");
-            Console.WriteLine("==================");
+            Console.WriteLine("=====================");
+            Console.WriteLine("  CADASTRO DE VENDA");
+            Console.WriteLine("=====================");
             Console.WriteLine();
 
-            int proximoNumero = vendas.Count + 1; // Calcula o numero da próxima venda.
-            string codigoVenda = $"V{proximoNumero:D3}";
+            int proximoNumero = vendas.Count + 1; //Calcula o numero da próxima venda
+            string codigoVenda = $"V{proximoNumero:D3}"; //Gera códigos como V001, V002 e V003
 
-            Console.Write("Nome do cliente: ");
+            string nome; //Declara a variável que receberá o nome válido
 
-            string nome = Console.ReadLine() ?? string.Empty;
-            nome = nome.Trim();
-
-            if (string.IsNullOrWhiteSpace(nome))
+            while (true)
             {
-                Console.WriteLine("O nome do cliente é obrigatória");
-                return;
+                Console.Write("Nome do cliente: ");
+                nome = Console.ReadLine() ?? string.Empty;
+                nome = nome.Trim();
+
+                if (string.IsNullOrWhiteSpace(nome))
+                {
+                    Console.WriteLine("O nome do cliente é obrigatório");
+                    continue;
+                }
+
+                if (nome.Length <= 2) //Todo while precisa ter alguma instrução dentro dele capaz de alterar a condição
+                {
+                    Console.WriteLine("O nome do cliente deve possuir pelo menos 2 caracteres");
+                    continue;
+                }
+                break;
             }
 
-            Console.Write("CPF: ");
+            string cpf;
 
-            string cpf = Console.ReadLine() ?? string.Empty;
-            cpf = cpf.Trim();
-
-            if (string.IsNullOrWhiteSpace(cpf))
+            while (true)
             {
-                Console.WriteLine("O CPF é uma informação obrigatória");
-                return;
+                Console.Write("CPF: ");
+                cpf = Console.ReadLine() ?? string.Empty;
+                cpf = cpf.Trim().Replace(".", "").Replace("-", "").Replace(" ", "");
+
+                if (string.IsNullOrWhiteSpace(cpf))
+                {
+                    Console.WriteLine("O CPF é uma informação obrigatória");
+                    continue;
+                }
+
+                if (cpf.Length != 11)
+                {
+                    Console.WriteLine("O CPF deve possuir exatamente 11 números");
+                    continue;
+                }
+                break;
             }
 
-            Console.Write("Valor da compra: R$ ");
+            decimal valor;
 
-            if (!decimal.TryParse(Console.ReadLine(), out decimal valor) || valor <= 0)
+            while (true)
             {
-                Console.WriteLine("O valor da compra deve ser maior que zero");
-                return;
-            }
+                Console.Write("Valor da compra: R$ ");
 
-            valor = Math.Round(valor, 2);
+                if (!decimal.TryParse(Console.ReadLine(), out valor) || valor <= 0)
+                {
+                    Console.WriteLine("O valor da compra deve ser maior que zero");
+                    continue;
+                }
+
+                valor = Math.Round(valor, 2);
+                break;
+            }
 
             try
             {
@@ -112,6 +139,7 @@ namespace SistemaPagamentos
 
                 Console.WriteLine();
                 Console.WriteLine("Venda cadastrada com sucesso!");
+                Console.WriteLine($"Código da venda: {novaVenda.Codigo}");
                 Console.WriteLine($"Situação: {novaVenda.Situacao}");
             }
             catch (ArgumentException erro) // Captura os erros de validação gerados pelas classes.
@@ -119,14 +147,15 @@ namespace SistemaPagamentos
 
                 Console.WriteLine($"Não foi possível cadastrar a venda: {erro.Message}"); // Exibe o motivo pelo qual a venda não foi cadastrada.
             }
+            Console.WriteLine("--------------------------------------");
         }
 
 
         private static void ListarVendas()  // Lista todas as vendas cadastradas.
         {
-            Console.WriteLine("===================");
-            Console.WriteLine("VENDAS CADASTRADAS");
-            Console.WriteLine("===================");
+            Console.WriteLine("=====================");
+            Console.WriteLine("  VENDAS CADASTRADAS");
+            Console.WriteLine("=====================");
             Console.WriteLine();
             if (vendas.Count == 0)
             {
@@ -146,16 +175,22 @@ namespace SistemaPagamentos
                 if (venda.Situacao == SituacaoVenda.Pago) // Se a venda está paga
                 {
                     Console.WriteLine($"Forma de pagamento: {venda.FormaPagamentoUtilizada?.Descricao}");
-                    Console.WriteLine($"Valor final: R$ {venda.ValorFinal.Value:F2}");
+
+                    if (venda.ValorFinal.HasValue) // Verifica se existe um valor final
+                    {
+                        Console.WriteLine($"Valor final: R$ {venda.ValorFinal.Value:F2}");
+                    }
                 }
+                Console.WriteLine("--------------------------------------");
             }
+            Console.WriteLine("--------------------------------------");
         }
 
         private static void RealizarPagamento()
         {
-            Console.WriteLine("===================");
-            Console.WriteLine("REALIZAR PAGAMENTO");
-            Console.WriteLine("===================");
+            Console.WriteLine("=====================");
+            Console.WriteLine("  REALIZAR PAGAMENTO");
+            Console.WriteLine("=====================");
             Console.WriteLine();
 
             if (vendas.Count == 0)
@@ -168,24 +203,24 @@ namespace SistemaPagamentos
             string codigoVenda = Console.ReadLine() ?? string.Empty;
             codigoVenda = codigoVenda.Trim().ToUpper();
 
-            if (string.IsNullOrWhiteSpace(codigoVenda))
+            while (string.IsNullOrWhiteSpace(codigoVenda))
             {
                 Console.WriteLine("O código da venda é obrigatório");
-                return;
+                continue;
             }
 
             Venda? venda = BuscarVendaPorCodigo(codigoVenda);
 
-            if (venda is null)
+            while (venda is null)
             {
                 Console.WriteLine("Venda não encontrada.");
-                return;
+                continue;
             }
 
-            if (venda.Situacao == SituacaoVenda.Pago)
+            while (venda.Situacao == SituacaoVenda.Pago)
             {
                 Console.WriteLine("Esta venda já foi paga.");
-                return;
+                continue;
             }
 
             Console.WriteLine();
@@ -215,11 +250,10 @@ namespace SistemaPagamentos
                 case 3:
                     formaPagamento = new PagamentoDinheiro();
                     break;
-                default:
+                default:// Não é necessario pois essa validação já faz esse trabalho: if (!int.TryParse(Console.ReadLine(), out int opcaoPagamento) || opcaoPagamento < 1 || opcaoPagamento > 3)
                     Console.WriteLine("Forma de pagamento inválida.");
                     return;
             }
-
 
             try
             {
@@ -236,6 +270,7 @@ namespace SistemaPagamentos
             {
                 Console.WriteLine($"Não foi possível realizar o pagamento: {erro.Message}");
             }
+            Console.WriteLine("--------------------------------------");
         }
 
         private static Venda? BuscarVendaPorCodigo(string codigoVenda) // Declara um método que procura uma venda pelo codigo
